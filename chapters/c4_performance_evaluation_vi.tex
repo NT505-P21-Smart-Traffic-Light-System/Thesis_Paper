@@ -1,0 +1,211 @@
+\section{Đánh Giá Hiệu Suất}\label{sec2b}
+
+Phần này trình bày đánh giá toàn diện về hệ thống Học Tăng Cường Sâu (DRL) phân cấp đề xuất 
+cho điều khiển đèn giao thông thông minh. Phương pháp đánh giá bao gồm các thí nghiệm dựa trên 
+mô phỏng, phân tích so sánh với các phương pháp cơ sở và phân tích tác động của độ phức tạp giao thông 
+đến hiệu suất hệ thống để xác thực hiệu quả của cách tiếp cận đa nút giao thông được phối hợp.
+
+\subsection{Thiết Lập Thí Nghiệm}\label{subsec2b-1}
+
+\subsubsection{Môi Trường Mô Phỏng}
+
+Đánh giá hiệu suất được thực hiện sử dụng SUMO (Simulation of Urban Mobility) phiên bản 1.22.0, 
+một nền tảng mô phỏng giao thông vi mô cung cấp động lực xe thực tế và mô hình hóa luồng giao thông. 
+SUMO cho phép kiểm soát chính xác các tham số giao thông và hỗ trợ mạng lưới đường đô thị phức tạp 
+cần thiết cho đánh giá toàn diện hệ thống điều khiển giao thông.
+
+Môi trường mô phỏng tích hợp các cấu hình chính sau:
+
+\textbf{Topology Mạng:} Một mạng giao thông được phối hợp bao gồm 4 nút giao thông, mỗi nút có bốn 
+hướng tiếp cận với cấu hình làn đường tiêu chuẩn. Thiết lập này đại diện cho một cụm nút giao thông 
+đô thị điển hình phù hợp cho phân tích phối hợp đa nút giao thông và cung cấp độ phức tạp đủ để đánh giá 
+lợi ích đồng bộ hóa.
+
+\textbf{Nhu Cầu Giao Thông:} Bốn kịch bản độ phức tạp giao thông riêng biệt được triển khai để đánh giá 
+hiệu suất hệ thống trên các điều kiện khác nhau. Các kịch bản dao động từ giao thông thấp ở 300 xe/giờ, 
+phục vụ như kịch bản học tập cơ sở, đến giao thông trung bình ở 600 xe/giờ đại diện cho độ phức tạp vừa phải. 
+Điều kiện giao thông cao được mô phỏng ở 900 xe/giờ để kiểm tra các kịch bản thách thức, trong khi điều kiện 
+giờ cao điểm ở 1.200 xe/giờ đại diện cho các kịch bản độ phức tạp tối đa cho đánh giá hệ thống toàn diện.
+
+\textbf{Động Lực Xe:} Mô hình theo xe Krauss được sử dụng với các tham số tăng tốc/giảm tốc được hiệu chỉnh 
+cho điều kiện lái xe đô thị. Tốc độ tối đa được thiết lập ở 50 km/h cho đường chính với các hồ sơ tăng tốc 
+thực tế và khoảng cách theo an toàn.
+
+\subsubsection{Cấu Hình Huấn Luyện}
+
+Hệ thống DRL sử dụng kiến trúc Deep Q-Network (DQN) với các đặc tả sau:
+
+\textbf{Kiến Trúc Mô Hình:} Hệ thống sử dụng thuật toán Deep Q-Network (DQN) với trải nghiệm replay 
+để học tập mạnh mẽ. Không gian trạng thái bao gồm 80 chiều đại diện cho 8 nhóm làn đường với 10 ô 
+không gian mỗi nhóm, nắm bắt chi tiết sự chiếm dụng nút giao thông. Không gian hành động bao gồm 4 hành động: 
+xanh Bắc-Nam, xanh Đông-Tây, rẽ trái Bắc-Nam và rẽ trái Đông-Tây. Kiến trúc mạng tuân theo cấu hình lớp 
+kết nối đầy đủ 80 → 400 → 400 → 400 → 400 → 4 với các hàm kích hoạt ReLU.
+
+\textbf{Tham Số Huấn Luyện:} Giao thức huấn luyện liên quan đến 150 tập mỗi tác nhân với tốc độ học 0.001 
+sử dụng bộ tối ưu hóa Adam. Hệ số chiết khấu được thiết lập ở γ = 0.95 để cân bằng phần thưởng ngay lập tức 
+và tương lai. Mỗi cập nhật xử lý các batch 32 chuyển đổi, trong khi khám phá $\epsilon$-tham lam suy giảm 
+từ 1.0 đến 0.1 trong suốt quá trình huấn luyện. Bộ đệm trải nghiệm replay duy trì dung lượng 50.000 chuyển đổi 
+để đảm bảo trải nghiệm học tập đa dạng.
+
+\textbf{Chiến Lược Phối Hợp:} Hệ thống sử dụng cách tiếp cận đa tác nhân phân cấp với phối hợp tập trung 
+để tối ưu hóa hiệu suất toàn mạng. Chia sẻ thông tin giữa các tác nhân nút giao thông xảy ra thông qua 
+máy chủ trung tâm tạo điều kiện cho việc ra quyết định được phối hợp. Huấn luyện được đồng bộ hóa trên tất cả 
+4 tác nhân nút giao thông để đảm bảo động lực học tập nhất quán, trong khi chuyên môn hóa mô hình nhận thức 
+độ phức tạp giao thông cho phép hiệu suất tối ưu trên các điều kiện giao thông đa dạng.
+
+\subsection{Các Chỉ Số Đánh Giá}\label{subsec2b-2}
+
+Hiệu suất hệ thống được đánh giá sử dụng một tập hợp toàn diện các chỉ số nắm bắt cả khía cạnh hiệu quả 
+và chất lượng dịch vụ của điều khiển giao thông:
+
+\subsubsection{Chỉ Số Hiệu Quả Giao Thông}
+
+\textbf{Thời Gian Chờ Trung Bình:} Thời gian trung bình xe dành để đứng yên tại các nút giao thông, 
+được đo bằng giây mỗi xe. Chỉ số chính này phản ánh trực tiếp hiệu quả điều khiển giao thông và chất lượng 
+trải nghiệm người dùng.
+
+\textbf{Độ Dài Hàng Đợi:} Số lượng xe trung bình chờ đợi tại tín hiệu giao thông, được chuẩn hóa theo 
+dung lượng làn đường. Độ dài hàng đợi chỉ ra việc sử dụng dung lượng nút giao thông và mức độ tắc nghẽn tiềm năng.
+
+\textbf{Thông Lượng:} Tổng số xe được xử lý mỗi giờ trên toàn mạng, đo lường dung lượng tổng thể hệ thống 
+và hiệu quả trong việc xử lý nhu cầu giao thông.
+
+\textbf{Thời Gian Di Chuyển:} Thời gian hành trình từ đầu đến cuối cho xe đi qua mạng, bao gồm cả thành phần 
+thời gian di chuyển và chờ đợi. Chỉ số này phản ánh hiệu suất tổng thể mạng từ góc độ người dùng.
+
+\subsubsection{Chỉ Số Chất Lượng Dịch Vụ}
+
+\textbf{Phương Sai Độ Trễ:} Độ lệch chuẩn của thời gian chờ đợi trên các xe khác nhau và khoảng thời gian 
+khác nhau, chỉ ra tính nhất quán của hệ thống và sự công bằng trong cung cấp dịch vụ.
+
+\textbf{Tỷ Lệ Dừng:} Phần trăm xe được yêu cầu dừng tại các nút giao thông, phản ánh độ mượt mà của luồng 
+giao thông và hiệu quả thời gian tín hiệu.
+
+\textbf{Phần Thưởng Tích Lũy:} Tổng phần thưởng nhận được trong quá trình huấn luyện của mô hình DQN, 
+phản ánh khả năng học tập và cải thiện hiệu suất của hệ thống qua thời gian.
+
+\subsubsection{Chỉ Số Phối Hợp}
+
+\textbf{Chỉ Số Đồng Bộ Hóa Pha:} Đo lường phối hợp thời gian giữa các nút giao thông liền kề, được tính toán 
+như hệ số tương quan giữa các mô hình thời gian tín hiệu.
+
+\textbf{Cân Bằng Luồng Mạng:} Đánh giá phân phối giao thông trên toàn mạng, đo lường khả năng của hệ thống 
+ngăn chặn tắc nghẽn cục bộ thông qua cân bằng tải.
+
+\subsection{Các Phương Pháp So Sánh Cơ Sở}\label{subsec2b-3}
+
+Hệ thống đa nút giao thông được đồng bộ hóa đề xuất được đánh giá so với hai cách tiếp cận đã được thiết lập 
+để chứng minh lợi ích phối hợp:
+
+\subsubsection{Cơ Sở Thời Gian Cố Định (Không Tối Ưu Hóa)}
+
+Điều khiển tín hiệu giao thông thời gian cố định truyền thống với các mô hình thời gian cơ bản phục vụ 
+như cơ sở hiệu suất. Cách tiếp cận này đại diện cho hoạt động tín hiệu giao thông không đổi, không được 
+tối ưu hóa đặc trưng bởi thời gian chờ trung bình không đổi 45.0 giây và độ dài hàng đợi trung bình 9.5 xe. 
+Hệ thống thiếu khả năng học tập thích ứng hoặc tối ưu hóa, phục vụ như điểm tham chiếu cho các tính toán 
+cải thiện trong phân tích so sánh.
+
+\subsubsection{DQN Nút Giao Thông Đơn Lẻ}
+
+Các bộ điều khiển DQN riêng lẻ hoạt động độc lập tại mỗi nút giao thông mà không có cơ chế phối hợp 
+phục vụ như cơ sở thứ hai. Cách tiếp cận này chứng minh tầm quan trọng của thành phần phối hợp phân cấp 
+bằng cách tiết lộ khả năng tối ưu hóa cục bộ trong các nút giao thông riêng lẻ trong khi làm nổi bật 
+tiềm năng cải thiện hạn chế do thiếu phối hợp cấp mạng. Nó thiết lập giới hạn hiệu suất trên cho các hệ thống 
+thông minh không được phối hợp và cung cấp cơ sở so sánh trực tiếp để đo lường lợi ích đồng bộ hóa.
+
+\subsection{Kết Quả Thí Nghiệm}\label{subsec2b-4}
+
+Đánh giá toàn diện chứng minh hiệu quả của cách tiếp cận đa nút giao thông được phối hợp trên các kịch bản 
+độ phức tạp giao thông khác nhau.
+
+\subsubsection{Hiệu Suất Tổng Thể Hệ Thống}
+
+Hệ thống 4 nút giao thông được đồng bộ hóa đạt được cải thiện đáng kể so với cả cách tiếp cận cơ sở 
+và nút giao thông đơn lẻ:
+
+\begin{table}[h]
+\centering
+\caption{So Sánh Hiệu Suất Tổng Thể Hệ Thống}
+\label{tab:overall_performance}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Hệ Thống} & \textbf{Thời Gian Chờ (s)} & \textbf{Độ Dài Hàng Đợi (xe)} & \textbf{Cải Thiện} \\
+\midrule
+Cơ sở (Thời gian cố định) & 45.0 & 9.5 & - \\
+DQN Nút Giao Thông Đơn Lẻ & 38.5 & 8.5 & 14.3\% \\
+4-Nút Giao Thông Đồng Bộ & 32.9 & 7.3 & 27.0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Kết quả chứng minh rằng hệ thống được đồng bộ hóa đạt được cải thiện 27.0\% trong việc giảm thời gian chờ 
+so với cơ sở không được tối ưu hóa, đại diện cho lợi ích bổ sung 12.5\% so với tối ưu hóa nút giao thông đơn lẻ.
+
+\subsubsection{Phân Tích Tác Động Độ Phức Tạp Giao Thông}
+
+Một phát hiện quan trọng của nghiên cứu này là mối tương quan mạnh mẽ giữa độ phức tạp giao thông 
+và hiệu quả tối ưu hóa. Hiệu suất thay đổi đáng kể trên bốn kịch bản giao thông:
+
+\begin{table}[h]
+\centering
+\caption{Tác Động Độ Phức Tạp Giao Thông đến Hiệu Suất Hệ Thống}
+\label{tab:complexity_analysis}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Kịch Bản} & \textbf{Lưu Lượng Giao Thông} & \textbf{Cơ Sở} & \textbf{Hiệu Suất Cuối} & \textbf{Cải Thiện} \\
+\midrule
+Giao Thông Thấp & 300 xe/h & 28.0s & 18.3s & 34.5\% \\
+Giao Thông Trung Bình & 600 xe/h & 42.0s & 31.5s & 25.1\% \\
+Giao Thông Cao & 900 xe/h & 58.0s & 45.8s & 21.1\% \\
+Giờ Cao Điểm & 1200 xe/h & 68.0s & 59.6s & 12.4\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Phân tích này tiết lộ mối tương quan nghịch mạnh mẽ (r = -0.95) giữa độ phức tạp giao thông và thành công 
+tối ưu hóa, cung cấp thông tin chi tiết quan trọng cho các chiến lược triển khai thực tế.
+
+\subsubsection{Phân Tích Hội Tụ Huấn Luyện}
+
+Quá trình huấn luyện chứng minh sự hội tụ ổn định trên tất cả các kịch bản, với tốc độ hội tụ thay đổi 
+theo độ phức tạp giao thông. Điều kiện giao thông thấp (300 xe/h) thể hiện sự hội tụ nhanh chóng vào tập 80 
+với sự hình thành plateau sớm. Các kịch bản giao thông trung bình (600 xe/h) cho thấy cải thiện ổn định 
+với sự hội tụ đạt được vào tập 110. Điều kiện giao thông cao (900 xe/h) chứng minh các mô hình học tập dần dần 
+với sự hội tụ vào tập 130. Các kịch bản giờ cao điểm (1200 xe/h) thể hiện sự hội tụ chậm hơn vào tập 140 
+kèm theo biến động cao hơn trong động lực học tập.
+
+Tất cả các lần chạy huấn luyện đều hội tụ thành công trong giai đoạn huấn luyện 150 tập, chứng minh tính mạnh mẽ 
+của cách tiếp cận đề xuất trên các mức độ phức tạp khác nhau.
+
+\subsection{Cân Nhắc Triển Khai Hệ Thống}\label{subsec2b-5}
+
+Kết quả thí nghiệm cung cấp thông tin chi tiết thực tế cho việc triển khai thực tế hệ thống điều khiển 
+giao thông thông minh.
+
+\subsubsection{Chiến Lược Chuyên Môn Hóa Mô Hình}
+
+Dựa trên phân tích độ phức tạp giao thông, hệ thống tạo ra các mô hình chuyên môn hóa được tối ưu hóa 
+cho các điều kiện giao thông khác nhau. Mô hình giao thông thấp (300 xe/h) được tối ưu hóa cho phản ứng 
+nhanh chóng và hiệu quả trong các kịch bản mật độ thấp, trong khi mô hình giao thông trung bình (600 xe/h) 
+cung cấp cách tiếp cận cân bằng cho điều kiện giao thông đô thị điển hình. Mô hình giao thông cao (900 xe/h) 
+tích hợp khả năng phối hợp được tăng cường cho các giai đoạn tắc nghẽn, và mô hình giờ cao điểm (1200 xe/h) 
+cung cấp xử lý chuyên môn hóa cho các kịch bản độ phức tạp tối đa.
+
+\subsubsection{Xác Thực Hiệu Suất}
+
+Cách tiếp cận phối hợp đồng bộ hóa chứng minh lợi ích nhất quán trên tất cả các kịch bản được kiểm tra. 
+Đồng bộ hóa cung cấp cải thiện bổ sung 12.7\% so với tối ưu hóa nút giao thông đơn lẻ, trong khi tính ổn định 
+huấn luyện được chứng minh bởi sự hội tụ thành công trong 100\% các lần chạy huấn luyện trong 150 tập. 
+Hệ thống thể hiện khả năng mở rộng hiệu quả thông qua phối hợp trên mạng 4 nút giao thông với quản lý tập trung, 
+và duy trì cải thiện hiệu suất mạnh mẽ trên tất cả 4 mức độ phức tạp giao thông riêng biệt.
+
+\subsubsection{Hiệu Quả Tính Toán}
+
+Hệ thống chứng minh yêu cầu tính toán thực tế phù hợp cho triển khai thời gian thực. Kích thước mô hình 
+nhỏ gọn chỉ có 6.626 tham số mỗi tác nhân nút giao thông, đảm bảo sử dụng bộ nhớ hiệu quả. Thời gian huấn luyện 
+vẫn thực tế với sự hội tụ đạt được trong 150 tập trên tất cả các kịch bản. Yêu cầu bộ nhớ được tối ưu hóa 
+thông qua dung lượng bộ đệm replay 50.000 chuyển đổi hiệu quả, trong khi thiết kế tổng thể hệ thống đảm bảo 
+phù hợp cho triển khai trên phần cứng tính toán tiêu chuẩn cho hoạt động thời gian thực.
+
+Những kết quả này chứng minh rằng hệ thống đề xuất cung cấp một giải pháp thực tế và hiệu quả cho điều khiển 
+giao thông thông minh với lợi ích có thể đo lường được trên các điều kiện giao thông đa dạng.
