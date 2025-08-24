@@ -183,6 +183,62 @@ convergence by episode 140 accompanied by higher volatility in learning dynamics
 All training runs successfully converged within the 150-episode training period, demonstrating the 
 robustness of the proposed approach across varying complexity levels.
 
+\subsubsection{Training Progress Visualization}
+
+To provide comprehensive insights into the learning dynamics, Figure~\ref{fig:sync_training_overview} 
+illustrates the complete training progress of the Sync Agent system across 150 episodes.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ch4_sync_training_overview.png}
+    \caption{Comprehensive Sync Agent training progress overview showing reward improvement, loss reduction, and traffic performance metrics over 150 episodes}
+    \label{fig:sync_training_overview}
+\end{figure}
+
+The training overview demonstrates consistent improvement across all metrics, with reward values 
+increasing from -2,000 to -840, loss decreasing from 800 to 40, and traffic performance metrics 
+showing clear upward trends throughout the training process.
+
+\subsubsection{Individual Intersection Training Analysis}
+
+Figure~\ref{fig:dqn_training_progress} provides a comprehensive view of the DQN training progress 
+for all intersection agents, including baseline comparisons and system-wide performance analysis.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ch4_dqn_training_progress.png}
+    \caption{DQN training progress analysis - Complete system performance overview with baseline comparisons}
+    \label{fig:dqn_training_progress}
+\end{figure}
+
+This comprehensive analysis shows the training progression of individual DQN agents alongside 
+baseline performance metrics, demonstrating the gradual improvement in traffic control effectiveness 
+through coordinated learning.
+
+\subsubsection{Unified Intersection Performance Comparison}
+
+Figure~\ref{fig:unified_intersection_analysis} presents a unified view of all four intersection 
+models in a single chart for direct comparison, showing the learning curves and convergence patterns 
+across different traffic complexity scenarios.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ch4_unified_intersection_analysis.png}
+    \caption{Unified analysis of all intersection models showing learning curves and convergence patterns across traffic complexity scenarios}
+    \label{fig:unified_intersection_analysis}
+\end{figure}
+
+The unified analysis reveals distinct learning patterns:
+\begin{itemize}
+    \item \textbf{Intersection 1 (Blue):} Rapid learning with early convergence at episode 80
+    \item \textbf{Intersection 2 (Orange):} Steady progress with convergence at episode 110
+    \item \textbf{Intersection 3 (Red):} Slower learning with setbacks, converging at episode 130
+    \item \textbf{Intersection 4 (Purple):} Very slow learning with multiple plateaus, converging at episode 140
+\end{itemize}
+
+This visualization confirms the strong inverse correlation between traffic complexity and learning 
+convergence speed, providing crucial insights for deployment strategy optimization.
+
 \subsection{System Deployment Considerations}\label{subsec2b-5}
 
 The experimental results provide practical insights for real-world deployment of the intelligent 
