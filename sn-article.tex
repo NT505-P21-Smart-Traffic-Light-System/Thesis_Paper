@@ -30,7 +30,7 @@
  
 %%\documentclass[pdflatex,sn-nature]{sn-jnl}% Style for submissions to Nature Portfolio journals
 %%\documentclass[pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
-\documentclass[xelatex,sn-mathphys-num]{sn-jnl}% Math and Physical Sciences Numbered Reference Style
+\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}% Math and Physical Sciences Numbered Reference Style
 %%\documentclass[pdflatex,sn-mathphys-ay]{sn-jnl}% Math and Physical Sciences Author Year Reference Style
 %%\documentclass[pdflatex,sn-aps]{sn-jnl}% American Physical Society (APS) Reference Style
 %%\documentclass[pdflatex,sn-vancouver-num]{sn-jnl}% Vancouver Numbered Reference Style
@@ -55,9 +55,10 @@
 \usepackage{algorithmicx}%
 \usepackage{algpseudocode}%
 \usepackage{listings}%
-\usepackage{fontspec}%
+\usepackage[T5]{fontenc}%
+\usepackage[utf8]{inputenc}%
 \usepackage[vietnamese]{babel}%
-\setmainfont{Times New Roman}%
+
 
 %%%%
 
@@ -119,7 +120,7 @@
 %% Sample for unstructured abstract %%
 %%==================================%%
 
-\abstract{Urban traffic congestion has become a critical challenge in modern cities, with Ho Chi Minh City experiencing a 17\% increase in traffic delays and air pollution levels exceeding WHO standards by 4 times. This paper presents an intelligent traffic light control network system that integrates Deep Reinforcement Learning (DRL) with IoT technologies for adaptive traffic management. The proposed system employs a hierarchical architecture combining local Deep Q-Network (DQN) agents at individual intersections with a central Soft Actor-Critic (SAC) synchronization agent for network-wide coordination. Computer vision capabilities using YOLO11 enable real-time vehicle detection and tracking from surveillance cameras. The DQN agents achieve 14.3\% improvement in waiting time reduction compared to fixed-time control systems. The synchronized multi-intersection system demonstrates 27.0\% improvement, providing an additional 12.5\% benefit over single intersection optimization. Experimental validation shows strong inverse correlation (r = -0.95) between traffic complexity and optimization effectiveness, with low-traffic scenarios achieving up to 34.5\% improvement. The system generates five specialized TensorFlow 2.0.0 models ready for real-world deployment, offering a practical solution for intelligent transportation systems.}
+\abstract{Urban traffic congestion has become a critical challenge in modern cities, with Ho Chi Minh City experiencing a 17\% increase in traffic delays and air pollution levels exceeding WHO standards by 4 times. This paper presents an intelligent traffic light control network system that integrates Deep Reinforcement Learning (DRL) with IoT technologies for adaptive traffic management. The proposed system employs a hierarchical architecture combining local Deep Q-Network (DQN) agents at individual intersections with a central Soft Actor-Critic (SAC) synchronization agent for network-wide coordination. Computer vision capabilities using YOLO11 enable real-time vehicle detection and tracking from surveillance cameras. The DQN agents achieve 14.3\% improvement in waiting time reduction compared to fixed-time control systems. The synchronized multi-intersection system demonstrates 27.0\% improvement, providing an additional 12.5\% benefit over single intersection optimization. Experimental validation shows strong inverse correlation (r = -0.95) between traffic complexity and optimization effectiveness, with low-traffic scenarios achieving up to 34.5\% improvement. The system generates five specialized TensorFlow models ready for real-world deployment, offering a practical solution for intelligent transportation systems.}
 
 %%================================%%
 %% Sample for structured abstract %%
@@ -147,11 +148,11 @@
 
 % \input{chapters/c3_proposed_system}
 
-\input{chapters/c3_proposed_system_vi}
+\input{chapters/c3_proposed_system}
 
 % \input{chapters/c4_performance_evaluation}
 
-\input{chapters/c4_performance_evaluation_vi}
+\input{chapters/c4_performance_evaluation}
 
 \input{chapters/c5_results}
 
